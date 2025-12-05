@@ -302,113 +302,113 @@ resize(); initParticles(); animateCanvas();
 
 function initScrollAnimations() {
     // Hero Background Parallax
-const heroBg = document.querySelector('.hero-bg-image');
-const heroPattern = document.querySelector('.hero-pattern');
-if (heroBg) {
-    gsap.to(heroBg, {
-        yPercent: 30,
-        scale: 1.1,
-        ease: 'none',
-        scrollTrigger: {
-            trigger: '.hero',
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true
-        }
-    });
-}
-if (heroPattern) {
-    gsap.to(heroPattern, {
-        yPercent: 20,
-        ease: 'none',
-        scrollTrigger: {
-            trigger: '.hero',
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true
-        }
-    });
-}
+    const heroBg = document.querySelector('.hero-bg-image');
+    const heroPattern = document.querySelector('.hero-pattern');
+    if (heroBg) {
+        gsap.to(heroBg, {
+            yPercent: 30,
+            scale: 1.1,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+    }
+    if (heroPattern) {
+        gsap.to(heroPattern, {
+            yPercent: 20,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true
+            }
+        });
+    }
 
-// Reveal Text on Scroll
-document.querySelectorAll('.reveal-text').forEach(el => {
-    gsap.from(el, {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-            trigger: el,
-            start: 'top 85%',
-        }
-    });
-});
-
-// Card Stacking (Sticky Effect)
-const cards = document.querySelectorAll('.card');
-if (cards.length > 0) {
-    cards.forEach((card, index) => {
-        // Scale down previous cards when next card comes into view
-        if (index < cards.length - 1) {
-            ScrollTrigger.create({
-                trigger: cards[index + 1],
-                start: 'top 80%',
-                end: 'top 20%',
-                scrub: 1,
-                onEnter: () => {
-                    gsap.to(card, {
-                        scale: 0.9 + (index * 0.02),
-                        opacity: 0.5,
-                        duration: 0.5,
-                        ease: 'power2.out'
-                    });
-                },
-                onLeaveBack: () => {
-                    gsap.to(card, {
-                        scale: 1,
-                        opacity: 1,
-                        duration: 0.5,
-                        ease: 'power2.out'
-                    });
-                }
-            });
-        }
-        
-        // Reveal animation for each card
-        ScrollTrigger.create({
-            trigger: card,
-            start: 'top 90%',
-            animation: gsap.from(card, {
-                y: 100,
-                opacity: 0,
-                duration: 1,
-                ease: 'power3.out'
-            }),
-            once: true
+    // Reveal Text on Scroll
+    document.querySelectorAll('.reveal-text').forEach(el => {
+        gsap.from(el, {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: el,
+                start: 'top 85%',
+            }
         });
     });
-}
 
-// Stats Counter
-const stats = document.querySelectorAll('.stat-num');
-stats.forEach(stat => {
-    ScrollTrigger.create({
-        trigger: stat,
-        start: 'top 85%',
-        once: true,
-        onEnter: () => {
-            const target = +stat.getAttribute('data-target');
-            gsap.to(stat, {
-                innerText: target,
-                duration: 2,
-                snap: { innerText: 1 },
-                ease: 'power2.out'
+    // Card Stacking (Sticky Effect) - The Premium Experience
+    const cards = document.querySelectorAll('.card');
+    if (cards.length > 0) {
+        cards.forEach((card, index) => {
+            // Scale down previous cards when next card comes into view
+            if (index < cards.length - 1) {
+                ScrollTrigger.create({
+                    trigger: cards[index + 1],
+                    start: 'top 80%',
+                    end: 'top 20%',
+                    scrub: 1,
+                    onEnter: () => {
+                        gsap.to(card, {
+                            scale: 0.9 + (index * 0.02),
+                            opacity: 0.5,
+                            duration: 0.5,
+                            ease: 'power2.out'
+                        });
+                    },
+                    onLeaveBack: () => {
+                        gsap.to(card, {
+                            scale: 1,
+                            opacity: 1,
+                            duration: 0.5,
+                            ease: 'power2.out'
+                        });
+                    }
+                });
+            }
+            
+            // Reveal animation for each card
+            ScrollTrigger.create({
+                trigger: card,
+                start: 'top 90%',
+                animation: gsap.from(card, {
+                    y: 100,
+                    opacity: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                }),
+                once: true
             });
-        }
-    });
-});
+        });
+    }
 
-    // Horizontal Scroll
+    // Stats Counter
+    const stats = document.querySelectorAll('.stat-num');
+    stats.forEach(stat => {
+        ScrollTrigger.create({
+            trigger: stat,
+            start: 'top 85%',
+            once: true,
+            onEnter: () => {
+                const target = +stat.getAttribute('data-target');
+                gsap.to(stat, {
+                    innerText: target,
+                    duration: 2,
+                    snap: { innerText: 1 },
+                    ease: 'power2.out'
+                });
+            }
+        });
+    });
+
+    // Horizontal Scroll for Values
     if (window.innerWidth > 768) {
         const track = document.querySelector('.horizontal-track');
         const wrapper = document.querySelector('.horizontal-scroll-wrapper');
