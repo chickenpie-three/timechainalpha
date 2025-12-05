@@ -64,6 +64,10 @@ body.loading {
     overflow: hidden;
 }
 
+body:not(.loading) .preloader {
+    display: none !important;
+}
+
 /* ==========================================================================
    Typography
    ========================================================================== */
@@ -182,6 +186,12 @@ body.hovered .cursor-circle {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+/* Fallback: Hide preloader if JS fails */
+body:not(.loading) .preloader,
+.preloader[style*="display: none"] {
+    display: none !important;
 }
 
 .preloader-terminal {
@@ -453,7 +463,6 @@ body.hovered .cursor-circle {
 .anim-text {
     display: inline-block;
     will-change: transform;
-    /* Removed default transform: translateY(100%) to allow GSAP to handle it */
 }
 
 .hero-description {
@@ -567,7 +576,7 @@ body.hovered .cursor-circle {
     100% { transform: translateX(-50%); }
 }
 
-/* Expertise Cards */
+/* Expertise Cards (Sticky Version) */
 .cards-stack {
     position: relative;
     margin-top: 4rem;
@@ -591,6 +600,10 @@ body.hovered .cursor-circle {
     position: relative;
 }
 
+.card:not(:first-child) {
+    transform: none;
+}
+
 .card-bg-image {
     position: absolute;
     top: 0;
@@ -599,14 +612,14 @@ body.hovered .cursor-circle {
     height: 100%;
     background-size: cover;
     background-position: center;
-    opacity: 0.2;
+    opacity: 0.1;
     z-index: 0;
     filter: grayscale(100%) brightness(0.2) contrast(1.2);
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .card:hover .card-bg-image {
-    opacity: 0.3;
+    opacity: 0.2;
     transform: scale(1.05);
 }
 
@@ -643,7 +656,6 @@ body.hovered .cursor-circle {
     position: relative;
     z-index: 2;
 }
-
 
 /* Stats */
 .stats-section {
@@ -864,23 +876,4 @@ body.hovered .cursor-circle {
     .horizontal-track { flex-direction: column; padding-right: 2rem; }
     .h-item { width: 100%; height: auto; min-height: 300px; }
     .footer-links { flex-direction: column; gap: 2rem; }
-}
-
-/* ==========================================================================
-   Mobile Menu Animation
-   ========================================================================== */
-.menu-toggle {
-    z-index: 101;
-}
-
-.menu-toggle span {
-    transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.menu-toggle.active span:first-child {
-    transform: translateY(8px) rotate(45deg);
-}
-
-.menu-toggle.active span:last-child {
-    transform: translateY(-8px) rotate(-45deg);
 }
