@@ -91,12 +91,17 @@ function revealSite() {
     const preloader = document.querySelector('.preloader');
     if (preloader) preloader.style.display = 'none';
     document.body.classList.remove('loading');
-    if (lenis) lenis.start();
+    
+    if (typeof lenis !== 'undefined' && lenis) lenis.start();
+    
     if (!animationInitialized) {
         initScrollAnimations();
         animationInitialized = true;
     }
-    ScrollTrigger.refresh();
+    
+    if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.refresh();
+    }
 }
 
 try {

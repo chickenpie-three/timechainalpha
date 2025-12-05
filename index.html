@@ -315,5 +315,21 @@
     </main>
 
     <script src="script.js"></script>
+    <script>
+        // Emergency fallback: Hide preloader if GSAP fails or takes too long
+        window.onload = function() {
+            setTimeout(() => {
+                const preloader = document.querySelector('.preloader');
+                const body = document.body;
+                if (preloader && body.classList.contains('loading')) {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => {
+                        preloader.style.display = 'none';
+                        body.classList.remove('loading');
+                    }, 500);
+                }
+            }, 6000); // 6 second max wait time
+        };
+    </script>
 </body>
 </html>
