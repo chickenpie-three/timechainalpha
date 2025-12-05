@@ -60,6 +60,14 @@ body {
     cursor: none; /* Custom cursor */
 }
 
+body.loading {
+    overflow: hidden;
+}
+
+body:not(.loading) .preloader {
+    display: none !important;
+}
+
 /* ==========================================================================
    Typography
    ========================================================================== */
@@ -178,6 +186,12 @@ body.hovered .cursor-circle {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+/* Fallback: Hide preloader if JS fails */
+body:not(.loading) .preloader,
+.preloader[style*="display: none"] {
+    display: none !important;
 }
 
 .preloader-terminal {

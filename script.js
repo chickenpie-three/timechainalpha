@@ -97,7 +97,32 @@ gsap.ticker.lagSmoothing(0);
 // ==========================================================================
 // CINEMATIC PRELOADER (The "Entrance")
 // ==========================================================================
-const masterTimeline = gsap.timeline();
+
+// Fallback: Ensure preloader hides after max time
+setTimeout(() => {
+    const preloader = document.querySelector('.preloader');
+    if (preloader && preloader.style.display !== 'none') {
+        gsap.to(preloader, {
+            opacity: 0,
+            duration: 0.5,
+            onComplete: () => {
+                preloader.style.display = 'none';
+                document.body.classList.remove('loading');
+            }
+        });
+    }
+}, 8000); // Max 8 seconds
+
+const masterTimeline = gsap.timeline({
+    onComplete: () => {
+        // Ensure preloader is hidden
+        const preloader = document.querySelector('.preloader');
+        if (preloader) {
+            preloader.style.display = 'none';
+        }
+        document.body.classList.remove('loading');
+    }
+});
 
 // 1. Terminal Sequence
 const terminalLines = document.querySelectorAll('.terminal-line');
@@ -133,17 +158,24 @@ masterTimeline
     }, '+=0.5')
     
 // 4. The Drop (Curtain Raise)
-    .to('.preloader-content', {
+    .to('.preloader-terminal, .preloader-brand, .loader-progress', {
         y: -50,
         opacity: 0,
         duration: 0.5
     })
     .to('.preloader', {
         yPercent: -100,
+        opacity: 0,
         duration: 1,
-        ease: 'power4.inOut'
+        ease: 'power4.inOut',
+        onComplete: () => {
+            document.body.classList.remove('loading');
+            document.querySelector('.preloader').style.display = 'none';
+        }
     })
-    .set('body', { className: '' }); // Enable scrolling
+    .call(() => {
+        document.body.classList.remove('loading');
+    });
 
 // 5. Hero Entrance
 const heroTitle = document.querySelector('.hero-title');
