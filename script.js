@@ -75,52 +75,52 @@ function shuffleText(element, finalText, duration = 1) {
 // ==========================================================================
 // LENIS SMOOTH SCROLL
 // ==========================================================================
-const lenis = new Lenis({
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    orientation: 'vertical',
-    smoothWheel: true,
-});
+let lenis;
 
-function raf(time) {
-    lenis.raf(time);
+function initLenis() {
+    lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        smoothWheel: true,
+        smoothTouch: false,
+    });
+
+    // Stop Lenis during preloader
+    lenis.stop();
+
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
     requestAnimationFrame(raf);
-}
-requestAnimationFrame(raf);
 
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-});
-gsap.ticker.lagSmoothing(0);
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+}
+
+// Initialize Lenis immediately
+initLenis();
 
 // ==========================================================================
 // CINEMATIC PRELOADER (The "Entrance")
 // ==========================================================================
-
-// Fallback: Ensure preloader hides after max time
-setTimeout(() => {
-    const preloader = document.querySelector('.preloader');
-    if (preloader && preloader.style.display !== 'none') {
-        gsap.to(preloader, {
-            opacity: 0,
-            duration: 0.5,
-            onComplete: () => {
-                preloader.style.display = 'none';
-                document.body.classList.remove('loading');
-            }
-        });
-    }
-}, 8000); // Max 8 seconds
-
 const masterTimeline = gsap.timeline({
     onComplete: () => {
-        // Ensure preloader is hidden
         const preloader = document.querySelector('.preloader');
         if (preloader) {
             preloader.style.display = 'none';
         }
         document.body.classList.remove('loading');
+        // Enable Lenis scrolling after preloader
+        if (lenis) {
+            lenis.start();
+        }
+        // Refresh ScrollTrigger after preloader completes
+        ScrollTrigger.refresh();
     }
 });
 
@@ -161,20 +161,14 @@ masterTimeline
     .to('.preloader-terminal, .preloader-brand, .loader-progress', {
         y: -50,
         opacity: 0,
-        duration: 0.5
+        duration: 0.5,
+        stagger: 0.1
     })
     .to('.preloader', {
         yPercent: -100,
         opacity: 0,
         duration: 1,
-        ease: 'power4.inOut',
-        onComplete: () => {
-            document.body.classList.remove('loading');
-            document.querySelector('.preloader').style.display = 'none';
-        }
-    })
-    .call(() => {
-        document.body.classList.remove('loading');
+        ease: 'power4.inOut'
     });
 
 // 5. Hero Entrance
@@ -347,22 +341,50 @@ document.querySelectorAll('.reveal-text').forEach(el => {
     });
 });
 
-// Card Stacking
+// Card Stacking (Sticky Effect)
 const cards = document.querySelectorAll('.card');
-cards.forEach((card, index) => {
-    if (index < cards.length - 1) {
-        gsap.to(card, {
-            scale: 0.9 + (index * 0.02),
-            opacity: 0.5,
-            scrollTrigger: {
+if (cards.length > 0) {
+    cards.forEach((card, index) => {
+        // Scale down previous cards when next card comes into view
+        if (index < cards.length - 1) {
+            ScrollTrigger.create({
                 trigger: cards[index + 1],
                 start: 'top 80%',
                 end: 'top 20%',
-                scrub: true
-            }
+                scrub: 1,
+                onEnter: () => {
+                    gsap.to(card, {
+                        scale: 0.9 + (index * 0.02),
+                        opacity: 0.5,
+                        duration: 0.5,
+                        ease: 'power2.out'
+                    });
+                },
+                onLeaveBack: () => {
+                    gsap.to(card, {
+                        scale: 1,
+                        opacity: 1,
+                        duration: 0.5,
+                        ease: 'power2.out'
+                    });
+                }
+            });
+        }
+        
+        // Reveal animation for each card
+        ScrollTrigger.create({
+            trigger: card,
+            start: 'top 90%',
+            animation: gsap.from(card, {
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out'
+            }),
+            once: true
         });
-    }
-});
+    });
+}
 
 // Stats Counter
 const stats = document.querySelectorAll('.stat-num');
