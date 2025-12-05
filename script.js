@@ -119,6 +119,8 @@ const masterTimeline = gsap.timeline({
         if (lenis) {
             lenis.start();
         }
+        // Initialize all scroll animations after preloader
+        initScrollAnimations();
         // Refresh ScrollTrigger after preloader completes
         ScrollTrigger.refresh();
     }
@@ -298,7 +300,8 @@ resize(); initParticles(); animateCanvas();
 // SCROLL INTERACTIONS (The "Journey")
 // ==========================================================================
 
-// Hero Background Parallax
+function initScrollAnimations() {
+    // Hero Background Parallax
 const heroBg = document.querySelector('.hero-bg-image');
 const heroPattern = document.querySelector('.hero-pattern');
 if (heroBg) {
@@ -405,25 +408,29 @@ stats.forEach(stat => {
     });
 });
 
-// Horizontal Scroll
-if (window.innerWidth > 768) {
-    const track = document.querySelector('.horizontal-track');
-    const wrapper = document.querySelector('.horizontal-scroll-wrapper');
-    if (track && wrapper) {
-        gsap.to(track, {
-            x: () => -(track.scrollWidth - window.innerWidth + 100),
-            ease: 'none',
-            scrollTrigger: {
-                trigger: '#values',
-                start: 'top top',
-                end: () => `+=${track.scrollWidth}`,
-                pin: true,
-                scrub: 1,
-                invalidateOnRefresh: true
-            }
-        });
+    // Horizontal Scroll
+    if (window.innerWidth > 768) {
+        const track = document.querySelector('.horizontal-track');
+        const wrapper = document.querySelector('.horizontal-scroll-wrapper');
+        if (track && wrapper) {
+            gsap.to(track, {
+                x: () => -(track.scrollWidth - window.innerWidth + 100),
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '#values',
+                    start: 'top top',
+                    end: () => `+=${track.scrollWidth}`,
+                    pin: true,
+                    scrub: 1,
+                    invalidateOnRefresh: true
+                }
+            });
+        }
     }
 }
+
+// Initialize scroll animations immediately (they'll be ready after preloader)
+initScrollAnimations();
 
 // ==========================================================================
 // MICRO-INTERACTIONS
