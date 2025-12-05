@@ -33,3 +33,5 @@ yarn-error.log*
 # Temporary files
 *.tmp
 .cache/
+._*
+.DS_Store
