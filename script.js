@@ -5,39 +5,32 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 // UTILITIES (The "Engine Room")
 // ==========================================================================
 
-// Bespoke Text Splitter (replaces Club GreenSock SplitText)
 class TextSplitter {
     constructor(element, type = 'chars') {
         this.element = element;
         this.chars = [];
-        this.words = [];
         this.originalText = element.innerText;
         this.split(type);
     }
 
     split(type) {
-        // Simple splitting logic for demo purposes
-        // Preserves spaces and wraps characters
         const text = this.originalText;
         this.element.innerHTML = '';
-        
         if (type === 'chars') {
             const words = text.split(' ');
             words.forEach((word, wordIndex) => {
                 const wordSpan = document.createElement('span');
                 wordSpan.style.display = 'inline-block';
                 wordSpan.style.whiteSpace = 'nowrap';
-                
                 const chars = word.split('');
                 chars.forEach(char => {
                     const span = document.createElement('span');
                     span.innerText = char;
                     span.style.display = 'inline-block';
-                    span.style.position = 'relative'; // Enable transforms
+                    span.style.position = 'relative'; 
                     wordSpan.appendChild(span);
                     this.chars.push(span);
                 });
-                
                 this.element.appendChild(wordSpan);
                 if (wordIndex < words.length - 1) {
                     const space = document.createTextNode(' ');
@@ -48,27 +41,19 @@ class TextSplitter {
     }
 }
 
-// Hacker Shuffle Effect
 function shuffleText(element, finalText, duration = 1) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
     const originalText = finalText || element.innerText;
     let iterations = 0;
-    
     const interval = setInterval(() => {
         element.innerText = originalText.split('')
             .map((letter, index) => {
-                if (index < iterations) {
-                    return originalText[index];
-                }
+                if (index < iterations) return originalText[index];
                 return chars[Math.floor(Math.random() * chars.length)];
             })
             .join('');
-        
-        if (iterations >= originalText.length) {
-            clearInterval(interval);
-        }
-        
-        iterations += originalText.length / (duration * 30); // 60fps approx
+        if (iterations >= originalText.length) clearInterval(interval);
+        iterations += originalText.length / (duration * 30);
     }, 30);
 }
 
@@ -76,7 +61,6 @@ function shuffleText(element, finalText, duration = 1) {
 // LENIS SMOOTH SCROLL
 // ==========================================================================
 let lenis;
-
 function initLenis() {
     lenis = new Lenis({
         duration: 1.2,
@@ -85,153 +69,101 @@ function initLenis() {
         smoothWheel: true,
         smoothTouch: false,
     });
-
-    // Stop Lenis during preloader
-    lenis.stop();
-
+    lenis.stop(); // Stop during preloader
+    
     function raf(time) {
         lenis.raf(time);
         requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
-
     lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add((time) => {
-        lenis.raf(time * 1000);
-    });
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
 }
-
-// Initialize Lenis immediately
 initLenis();
 
 // ==========================================================================
 // CINEMATIC PRELOADER (The "Entrance")
 // ==========================================================================
-const masterTimeline = gsap.timeline({
-    onComplete: () => {
-        const preloader = document.querySelector('.preloader');
-        if (preloader) {
-            preloader.style.display = 'none';
-        }
-        document.body.classList.remove('loading');
-        // Enable Lenis scrolling after preloader
-        if (lenis) {
-            lenis.start();
-        }
-        // Initialize all scroll animations after preloader
+let animationInitialized = false;
+
+function revealSite() {
+    const preloader = document.querySelector('.preloader');
+    if (preloader) preloader.style.display = 'none';
+    document.body.classList.remove('loading');
+    if (lenis) lenis.start();
+    if (!animationInitialized) {
         initScrollAnimations();
-        // Refresh ScrollTrigger after preloader completes
-        ScrollTrigger.refresh();
+        animationInitialized = true;
     }
-});
+    ScrollTrigger.refresh();
+}
 
-// 1. Terminal Sequence
-const terminalLines = document.querySelectorAll('.terminal-line');
-masterTimeline
-    .to(terminalLines, {
-        opacity: 1,
-        stagger: 0.5,
-        duration: 0.1,
-        onStart: function() {
-            // Typing effect sound could go here
+try {
+    const masterTimeline = gsap.timeline({
+        onComplete: revealSite
+    });
+
+    // 1. Terminal Sequence (0s - 1.5s)
+    const terminalLines = document.querySelectorAll('.terminal-line');
+    if (terminalLines.length > 0) {
+        masterTimeline.to(terminalLines, { opacity: 1, stagger: 0.3, duration: 0.1 }, 0.2);
+        masterTimeline.to('.terminal-line.success', { color: '#FFD700', duration: 0.2 }, 1.2);
+    }
+
+    // 2. Brand Reveal (1.5s - 2.5s)
+    const brandReveals = document.querySelectorAll('.brand-reveal');
+    if (brandReveals.length > 0) {
+        masterTimeline.call(() => {
+            brandReveals.forEach(el => {
+                gsap.to(el, { opacity: 1, duration: 0.1 });
+                shuffleText(el, el.getAttribute('data-text'), 1.0);
+            });
+        }, null, 1.5);
+    }
+
+    // 3. Loader Progress (0.5s - 3.0s)
+    masterTimeline.to('.loader-bar', { width: '100%', duration: 2.5, ease: 'power2.inOut' }, 0.5);
+
+    // 4. The Drop (3.0s - 4.0s) - ABSOLUTE TIMING ensures it runs
+    masterTimeline.to('.preloader-terminal, .preloader-brand, .loader-progress', { 
+        y: -50, opacity: 0, duration: 0.5 
+    }, 3.0);
+    
+    masterTimeline.to('.preloader', { 
+        yPercent: -100, duration: 1, ease: 'power4.inOut' 
+    }, 3.2);
+
+    // 5. Hero Entrance (Starts at 3.8s)
+    const heroTitle = document.querySelector('.hero-title');
+    if (heroTitle) {
+        const lines = document.querySelectorAll('.hero-title .anim-text');
+        lines.forEach(line => {
+            gsap.set(line, { transform: 'none', y: 0, opacity: 1 });
+            new TextSplitter(line, 'chars');
+        });
+
+        const chars = document.querySelectorAll('.hero-title .anim-text span span');
+        if (chars.length > 0) {
+            masterTimeline.from(chars, {
+                y: 100, opacity: 0, rotateX: -90, stagger: 0.02, duration: 1, ease: 'back.out(1.7)', clearProps: 'all'
+            }, 3.8);
         }
-    })
-    .to('.terminal-line.success', {
-        color: '#FFD700', // Gold color for success
-        duration: 0.2
-    });
+        
+        masterTimeline.from('.hero-label .anim-text', { y: '100%', duration: 0.8, ease: 'power3.out' }, 4.0);
+        masterTimeline.from('.hero-description .anim-text', { y: 50, opacity: 0, duration: 0.8, ease: 'power3.out' }, 4.2);
+        masterTimeline.from('.hero-actions .anim-text', { y: 50, opacity: 0, duration: 0.8, ease: 'power3.out' }, 4.4);
+        masterTimeline.from('.nav', { y: -100, opacity: 0, duration: 1, ease: 'power3.out' }, 4.0);
+        masterTimeline.to('.scroll-down', { opacity: 1, duration: 1 }, 5.0);
+    }
 
-// 2. Brand Reveal (Shuffle)
-const brandReveals = document.querySelectorAll('.brand-reveal');
-masterTimeline.call(() => {
-    brandReveals.forEach(el => {
-        gsap.to(el, { opacity: 1, duration: 0.1 });
-        shuffleText(el, el.getAttribute('data-text'), 1.5);
-    });
-}, null, '+=0.2');
-
-// 3. Loader Progress
-masterTimeline
-    .to('.loader-bar', {
-        width: '100%',
-        duration: 1.5,
-        ease: 'power2.inOut'
-    }, '+=0.5')
-    
-// 4. The Drop (Curtain Raise)
-    .to('.preloader-terminal, .preloader-brand, .loader-progress', {
-        y: -50,
-        opacity: 0,
-        duration: 0.5,
-        stagger: 0.1
-    })
-    .to('.preloader', {
-        yPercent: -100,
-        opacity: 0,
-        duration: 1,
-        ease: 'power4.inOut'
-    });
-
-// 5. Hero Entrance
-const heroTitle = document.querySelector('.hero-title');
-if (heroTitle) {
-    // Split text manually
-    const lines = document.querySelectorAll('.hero-title .anim-text');
-    lines.forEach(line => {
-        // Force reset transform before splitting to ensure visibility
-        gsap.set(line, { transform: 'none', y: 0, opacity: 1 });
-        new TextSplitter(line, 'chars');
-    });
-
-    const chars = document.querySelectorAll('.hero-title .anim-text span span'); // Nested spans from splitter
-    
-    masterTimeline.from(chars, {
-        y: 100,
-        opacity: 0,
-        rotateX: -90,
-        stagger: 0.02,
-        duration: 1,
-        ease: 'back.out(1.7)',
-        clearProps: 'all'
-    }, '-=0.5');
-    
-    // Other Hero Elements
-    masterTimeline.from('.hero-label .anim-text', {
-        y: '100%',
-        duration: 0.8,
-        ease: 'power3.out'
-    }, '-=0.8');
-
-    masterTimeline.from('.hero-description .anim-text', {
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power3.out'
-    }, '-=0.6');
-
-    masterTimeline.from('.hero-actions .anim-text', {
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power3.out'
-    }, '-=0.6');
-    
-    masterTimeline.from('.nav', {
-        y: -100,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out'
-    }, '-=1');
-    
-    masterTimeline.to('.scroll-down', {
-        opacity: 1,
-        duration: 1
-    }, '-=0.5');
+} catch (error) {
+    console.error("Animation Init Error:", error);
+    revealSite(); // Emergency unlock
 }
 
 // ==========================================================================
-// INTERACTIVE CANVAS (The "Atmosphere")
+// INTERACTIVE CANVAS
 // ==========================================================================
 const canvas = document.getElementById('noise-canvas');
 const ctx = canvas.getContext('2d');
@@ -275,7 +207,6 @@ function initParticles() {
 function animateCanvas() {
     ctx.clearRect(0, 0, width, height);
     particles.forEach(p => { p.update(); p.draw(); });
-    // Connections
     ctx.strokeStyle = 'rgba(0, 77, 153, 0.1)';
     ctx.lineWidth = 1;
     for (let i = 0; i < particles.length; i++) {
@@ -297,146 +228,85 @@ window.addEventListener('resize', () => { resize(); initParticles(); });
 resize(); initParticles(); animateCanvas();
 
 // ==========================================================================
-// SCROLL INTERACTIONS (The "Journey")
+// SCROLL INTERACTIONS
 // ==========================================================================
-
 function initScrollAnimations() {
-    // Hero Background Parallax
+    // Parallax
     const heroBg = document.querySelector('.hero-bg-image');
     const heroPattern = document.querySelector('.hero-pattern');
     if (heroBg) {
         gsap.to(heroBg, {
-            yPercent: 30,
-            scale: 1.1,
-            ease: 'none',
-            scrollTrigger: {
-                trigger: '.hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true
-            }
+            yPercent: 30, scale: 1.1, ease: 'none',
+            scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
         });
     }
     if (heroPattern) {
         gsap.to(heroPattern, {
-            yPercent: 20,
-            ease: 'none',
-            scrollTrigger: {
-                trigger: '.hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true
-            }
+            yPercent: 20, ease: 'none',
+            scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
         });
     }
 
-    // Reveal Text on Scroll
+    // Reveal Text
     document.querySelectorAll('.reveal-text').forEach(el => {
         gsap.from(el, {
-            y: 50,
-            opacity: 0,
-            duration: 1,
-            ease: 'power3.out',
-            scrollTrigger: {
-                trigger: el,
-                start: 'top 85%',
-            }
+            y: 50, opacity: 0, duration: 1, ease: 'power3.out',
+            scrollTrigger: { trigger: el, start: 'top 85%' }
         });
     });
 
-    // Card Stacking (Sticky Effect) - The Premium Experience
+    // Card Stacking (Sticky)
     const cards = document.querySelectorAll('.card');
     if (cards.length > 0) {
         cards.forEach((card, index) => {
-            // Scale down previous cards when next card comes into view
             if (index < cards.length - 1) {
                 ScrollTrigger.create({
                     trigger: cards[index + 1],
                     start: 'top 80%',
                     end: 'top 20%',
-                    scrub: 1,
-                    onEnter: () => {
-                        gsap.to(card, {
-                            scale: 0.9 + (index * 0.02),
-                            opacity: 0.5,
-                            duration: 0.5,
-                            ease: 'power2.out'
-                        });
-                    },
-                    onLeaveBack: () => {
-                        gsap.to(card, {
-                            scale: 1,
-                            opacity: 1,
-                            duration: 0.5,
-                            ease: 'power2.out'
-                        });
-                    }
+                    scrub: true,
+                    onEnter: () => gsap.to(card, { scale: 0.9, opacity: 0.5, duration: 0.5 }),
+                    onLeaveBack: () => gsap.to(card, { scale: 1, opacity: 1, duration: 0.5 })
                 });
             }
-            
-            // Reveal animation for each card
             ScrollTrigger.create({
-                trigger: card,
-                start: 'top 90%',
-                animation: gsap.from(card, {
-                    y: 100,
-                    opacity: 0,
-                    duration: 1,
-                    ease: 'power3.out'
-                }),
-                once: true
+                trigger: card, start: 'top 90%', once: true,
+                animation: gsap.from(card, { y: 100, opacity: 0, duration: 1, ease: 'power3.out' })
             });
         });
     }
 
-    // Stats Counter
+    // Stats
     const stats = document.querySelectorAll('.stat-num');
     stats.forEach(stat => {
         ScrollTrigger.create({
-            trigger: stat,
-            start: 'top 85%',
-            once: true,
+            trigger: stat, start: 'top 85%', once: true,
             onEnter: () => {
                 const target = +stat.getAttribute('data-target');
-                gsap.to(stat, {
-                    innerText: target,
-                    duration: 2,
-                    snap: { innerText: 1 },
-                    ease: 'power2.out'
-                });
+                gsap.to(stat, { innerText: target, duration: 2, snap: { innerText: 1 }, ease: 'power2.out' });
             }
         });
     });
 
-    // Horizontal Scroll for Values
+    // Horizontal Scroll
     if (window.innerWidth > 768) {
         const track = document.querySelector('.horizontal-track');
-        const wrapper = document.querySelector('.horizontal-scroll-wrapper');
-        if (track && wrapper) {
+        if (track) {
             gsap.to(track, {
                 x: () => -(track.scrollWidth - window.innerWidth + 100),
                 ease: 'none',
                 scrollTrigger: {
-                    trigger: '#values',
-                    start: 'top top',
-                    end: () => `+=${track.scrollWidth}`,
-                    pin: true,
-                    scrub: 1,
-                    invalidateOnRefresh: true
+                    trigger: '#values', start: 'top top', end: () => `+=${track.scrollWidth}`, 
+                    pin: true, scrub: 1, invalidateOnRefresh: true
                 }
             });
         }
     }
 }
 
-// Initialize scroll animations immediately (they'll be ready after preloader)
-initScrollAnimations();
-
 // ==========================================================================
 // MICRO-INTERACTIONS
 // ==========================================================================
-
-// Custom Cursor
 const cursor = document.querySelector('.cursor');
 const cursorDot = document.querySelector('.cursor-dot');
 const cursorCircle = document.querySelector('.cursor-circle');
@@ -452,7 +322,6 @@ if (window.matchMedia("(pointer: fine)").matches) {
     });
 }
 
-// Magnetic Buttons
 document.querySelectorAll('.magnetic').forEach((magnet) => {
     magnet.addEventListener('mousemove', (e) => {
         const bound = magnet.getBoundingClientRect();
@@ -467,7 +336,6 @@ document.querySelectorAll('.magnetic').forEach((magnet) => {
     });
 });
 
-// Mobile Menu
 const menuToggle = document.querySelector('.menu-toggle');
 const navMenu = document.querySelector('.nav-menu');
 let isMenuOpen = false;
