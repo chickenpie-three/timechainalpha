@@ -435,7 +435,7 @@ body.hovered .cursor-circle {
     padding: 0 3rem;
     padding-top: 80px;
 }
-.hero-content { max-width: 900px; }
+.hero-content { max-width: 100%; }
 
 .hero-label {
     margin-bottom: 1.5rem;
