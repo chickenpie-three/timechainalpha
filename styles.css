@@ -584,7 +584,7 @@ body.hovered .cursor-circle {
 .tick-val  { color: var(--white); font-weight: 500; }
 .tick-chg  { font-size: 0.6rem; }
 .tick-chg.pos { color: var(--accent); }
-.tick-chg.neg { color: #5a6480; }
+.tick-chg.neg { color: #7a84a3; }
 .tick-sep  { color: rgba(255, 255, 255, 0.1); font-family: var(--font-mono); font-size: 0.6rem; }
 
 /* ==========================================================================
