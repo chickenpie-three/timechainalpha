@@ -223,19 +223,19 @@
                     <div class="expertise-index" role="tablist" aria-label="Expertise areas">
                         <div class="ei-indicator" aria-hidden="true"></div>
 
-                        <button class="ei-item active" data-target="0" role="tab" aria-selected="true" aria-controls="ep-0">
+                        <button class="ei-item active" data-target="0" role="tab" id="tab-ep-0" aria-selected="true" aria-controls="ep-0">
                             <span class="ei-num">01</span>
                             <span class="ei-name">Market Intelligence</span>
                             <span class="ei-arrow" aria-hidden="true">→</span>
                         </button>
 
-                        <button class="ei-item" data-target="1" role="tab" aria-selected="false" aria-controls="ep-1">
+                        <button class="ei-item" data-target="1" role="tab" id="tab-ep-1" aria-selected="false" aria-controls="ep-1">
                             <span class="ei-num">02</span>
                             <span class="ei-name">Trend Analysis</span>
                             <span class="ei-arrow" aria-hidden="true">→</span>
                         </button>
 
-                        <button class="ei-item" data-target="2" role="tab" aria-selected="false" aria-controls="ep-2">
+                        <button class="ei-item" data-target="2" role="tab" id="tab-ep-2" aria-selected="false" aria-controls="ep-2">
                             <span class="ei-num">03</span>
                             <span class="ei-name">Expert Commentary</span>
                             <span class="ei-arrow" aria-hidden="true">→</span>
@@ -245,7 +245,7 @@
                     <!-- Right: Content panels -->
                     <div class="expertise-panels">
 
-                        <div class="ep-panel active" id="ep-0" role="tabpanel">
+                        <div class="ep-panel active" id="ep-0" role="tabpanel" aria-labelledby="tab-ep-0">
                             <div class="ep-grid-bg" aria-hidden="true"></div>
                             <div class="ep-bg-num" aria-hidden="true">01</div>
                             <div class="ep-inner">
@@ -264,7 +264,7 @@
                             </div>
                         </div>
 
-                        <div class="ep-panel" id="ep-1" role="tabpanel">
+                        <div class="ep-panel" id="ep-1" role="tabpanel" aria-labelledby="tab-ep-1">
                             <div class="ep-grid-bg" aria-hidden="true"></div>
                             <div class="ep-bg-num" aria-hidden="true">02</div>
                             <div class="ep-inner">
@@ -283,7 +283,7 @@
                             </div>
                         </div>
 
-                        <div class="ep-panel" id="ep-2" role="tabpanel">
+                        <div class="ep-panel" id="ep-2" role="tabpanel" aria-labelledby="tab-ep-2">
                             <div class="ep-grid-bg" aria-hidden="true"></div>
                             <div class="ep-bg-num" aria-hidden="true">03</div>
                             <div class="ep-inner">
