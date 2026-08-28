@@ -563,6 +563,29 @@ body.hovered .cursor-circle {
     display: flex;
     align-items: center;
 }
+/* WCAG 2.2.2 Pause/Stop/Hide: visible pause toggle in the live feed ticker. */
+.ticker-toggle {
+    flex-shrink: 0;
+    height: 100%;
+    padding: 0 0.75rem;
+    background: transparent;
+    border: none;
+    border-left: 1px solid rgba(255, 215, 0, 0.15);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+}
+.ticker-toggle:hover { color: var(--bg-primary); background: rgba(255, 215, 0, 0.08); }
+.ticker-toggle__icon {
+    display: inline-block;
+    min-width: 1.5em;
+    text-align: center;
+}
 .ticker-track {
     overflow: hidden;
     flex: 1;
@@ -608,6 +631,32 @@ body.hovered .cursor-circle {
     height: 52px;
     display: flex;
     align-items: center;
+    position: relative;
+}
+/* WCAG 2.2.2 Pause/Stop/Hide: visible pause toggle over the marquee. */
+.marquee-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    line-height: 1;
+    padding: 4px 8px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+}
+.marquee-toggle:hover { background: var(--accent); color: var(--bg-card); }
+.marquee-toggle__icon {
+    display: inline-block;
+    min-width: 1.5em;
+    text-align: center;
 }
 .marquee-track {
     white-space: nowrap;

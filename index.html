@@ -121,6 +121,9 @@
             <!-- Live Data Ticker -->
             <div class="hero-ticker" aria-label="Market data feed">
                 <div class="ticker-label">LIVE FEED</div>
+                <button class="ticker-toggle" id="ticker-toggle" type="button" aria-label="Pause live ticker" aria-pressed="false">
+                    <span class="ticker-toggle__icon" aria-hidden="true">❚❚</span>
+                </button>
                 <div class="ticker-track">
                     <div class="ticker-content" id="ticker-content">
                         <span class="tick-item"><span class="tick-sym">BTC/USD</span><span class="tick-val">67,420</span><span class="tick-chg pos">▲ +2.34%</span></span>
@@ -163,6 +166,9 @@
 
         <!-- ─── MARQUEE ───────────────────────────────────────────────────── -->
         <div class="marquee-section">
+            <button class="marquee-toggle" id="marquee-toggle" type="button" aria-label="Pause marquee" aria-pressed="false">
+                <span class="marquee-toggle__icon" aria-hidden="true">❚❚</span>
+            </button>
             <div class="marquee-track">
                 <div class="marquee-content">
                     <span>ALPHA GENERATION</span><span class="separator">✦</span>
