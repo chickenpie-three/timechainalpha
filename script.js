@@ -439,6 +439,7 @@ let isMenuOpen   = false;
 
 function toggleMenu() {
     isMenuOpen = !isMenuOpen;
+    menuToggle.setAttribute('aria-expanded', isMenuOpen);
     if (isMenuOpen) {
         gsap.set(navMenu, {
             display: 'flex', position: 'fixed',
@@ -474,6 +475,7 @@ if (menuToggle) {
 window.addEventListener('resize', () => {
     if (window.innerWidth > 900 && isMenuOpen) {
         isMenuOpen = false;
+        menuToggle.setAttribute('aria-expanded', 'false');
         navMenu.style.cssText = '';
         menuToggle.classList.remove('active');
         if (lenis) lenis.start();
