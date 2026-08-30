@@ -481,3 +481,39 @@ window.addEventListener('resize', () => {
         if (lenis) lenis.start();
     }
 });
+
+// ==========================================================================
+// WCAG 2.2.2 PAUSE/STOP/HIDE — pause-toggle for auto-scrolling animations
+// ==========================================================================
+function bindPauseControl(toggleId, targetSelectors) {
+    const btn = document.getElementById(toggleId);
+    if (!btn) return;
+    const targets = targetSelectors
+        .map(sel => document.querySelector(sel))
+        .filter(Boolean);
+    btn.addEventListener('click', () => {
+        const wasPaused = btn.getAttribute('aria-pressed') === 'true';
+        const nowPaused = !wasPaused;
+        btn.setAttribute('aria-pressed', nowPaused ? 'true' : 'false');
+        const labelPrefix = btn.getAttribute('data-label-prefix') || 'Pause';
+        btn.setAttribute('aria-label', nowPaused ? `Play ${labelPrefix.toLowerCase()}` : `${labelPrefix} ${labelPrefix.toLowerCase()}`);
+        const icon = btn.querySelector('[aria-hidden="true"]');
+        if (icon) icon.textContent = nowPaused ? '▶' : '❚❚';
+        targets.forEach(el => {
+            el.style.animationPlayState = nowPaused ? 'paused' : 'running';
+        });
+    });
+}
+
+bindPauseControl('ticker-toggle', ['.ticker-content']);
+bindPauseControl('marquee-toggle', ['.marquee-track']);
+
+// Set initial aria-label from data attribute (more readable than the JS branch above)
+['ticker-toggle', 'marquee-toggle'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+        const prefix = id === 'ticker-toggle' ? 'Pause live ticker' : 'Pause marquee';
+        btn.setAttribute('aria-label', prefix);
+        btn.setAttribute('data-label-prefix', prefix);
+    }
+});
